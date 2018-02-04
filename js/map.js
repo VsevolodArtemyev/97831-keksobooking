@@ -20,28 +20,27 @@ var MAX_PRICE = 1000000;
 
 document.querySelector('.map').classList.remove('.map--faded');
 
-var renderOffer = function (quantity) {
+var renderOffer = function () {
   var offers = [];
 
-  // создание массива фотографий
+  // создание массива аватаров
   var imgUrls = [];
   for (var i = 1; i <= QUANTITY_OFFER; i++) {
     imgUrls.push('img/avatars/user0' + i + '.png');
   }
-  // копируем массив названий и фотографий
-  var offersTitles = OFFER_TITLES.slice();
+  // копируем массив фотографий
   var offersPhotos = OFFER_PHOTOS.slice();
   // создание объекта предложения
-  for (i = 0; i < quantity; i++) {
-    // получение номера фото предложения
+  for (i = 0; i < QUANTITY_OFFER; i++) {
     var offerImgNumber = Math.floor(Math.random() * imgUrls.length);
-    // получение номера названия предложения
-    var offerTitleNumber = Math.floor(Math.random() * offersTitles.length);
+    var offerTitleNumber = Math.floor(Math.random() * OFFER_TITLES.length);
     // сортировка массива случайным образом
-    offersPhotos.sort();
+    var compareValues = function () {
+      return Math.random() - 0.5;
+    };
+    offersPhotos.sort(compareValues);
     // формируем массив случайной длины
     var offersFeatures = OFFER_FEATURES.slice();
-    offersFeatures.sort();
     offersFeatures.length = Math.floor(Math.random() * (offersFeatures.length - 1) + 1);
     // определение координат случайным образом в заданном диапазоне
     var offerLocationX = Math.floor(Math.random() * (MAX_COORDINATE_X - MIN_COORDINATE_X) + MIN_COORDINATE_X);
@@ -51,7 +50,7 @@ var renderOffer = function (quantity) {
         'avatar': imgUrls[offerImgNumber]
       },
       'offer': {
-        'title': offersTitles[offerTitleNumber],
+        'title': OFFER_TITLES[offerTitleNumber],
         'address': offerLocationX + ', ' + offerLocationY,
         'price': Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE) + MIN_PRICE),
         'type': OFFER_TYPES[Math.floor(Math.random() * OFFER_TYPES.length)],
@@ -68,28 +67,31 @@ var renderOffer = function (quantity) {
         'y': offerLocationY
       }
     });
+    // удаление из массивов картинок и названий использованных элементов
+    imgUrls.splice(offerImgNumber, 1);
+    OFFER_TITLES.splice(offerTitleNumber, 1);
   }
-  // удаление из массивов картинок и названий использованных элементов
-  imgUrls.splice(offerImgNumber, 1);
-  offersTitles.splice(offerTitleNumber, 1);
   return offers;
 };
 
 // генерируем массив предложений
-var offers = renderOffer(QUANTITY_OFFER);
+var offers = renderOffer();
 
 // создание шаблона метки
-var templateButton = document.createElement('button');
-templateButton.className = 'map__pin';
-var templateImgInButton = document.createElement('img');
-templateImgInButton.width = PIN_IMG_WIDTH;
-templateImgInButton.height = PIN_IMG_HEIGHT;
-templateImgInButton.draggable = false;
-templateButton.appendChild(templateImgInButton);
+var getTemplateMarker = function () {
+  var templateButton = document.createElement('button');
+  templateButton.className = 'map__pin';
+  var templateImgInButton = document.createElement('img');
+  templateImgInButton.width = PIN_IMG_WIDTH;
+  templateImgInButton.height = PIN_IMG_HEIGHT;
+  templateImgInButton.draggable = false;
+  templateButton.appendChild(templateImgInButton);
+  return templateButton;
+};
 
 // функция добавления параметров метки
 var renderOfferMarker = function (offer) {
-  var marker = templateButton.cloneNode(true);
+  var marker = getTemplateMarker();
   marker.style = 'left: ' + (offer.location.x - PIN_WIDTH / 2) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
   marker.firstChild.src = offer.author.avatar;
   return marker;
@@ -102,46 +104,30 @@ for (var i = 0; i < QUANTITY_OFFER; i++) {
 }
 document.querySelector('.map__pins').appendChild(offersFragment);
 
-// заполнение данными карточки товара
-var renderOfferCard = function (offerItem) {
-  var offerType = 'Квартира';
-  if (offerItem.offer.type === 'bungalo') {
-    offerType = 'Бунгало';
-  } else if (offerItem.offer.type === 'house') {
-    offerType = 'Дом';
-  }
-  var filledOffer = templateOfferCard.cloneNode(true);
-  filledOffer.querySelector('h3').textContent = offerItem.offer.title;
-  filledOffer.querySelector('p small').textContent = offerItem.offer.address;
-  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + '&#x20bd;/ночь';
-  filledOffer.querySelector('h4').textContent = offerType;
-  filledOffer.querySelector('h4 + p').textContent = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
-  filledOffer.querySelector('p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
-  filledOffer.querySelector('.popup__avatar').src = offerItem.author.avatar;
-  filledOffer.querySelector('ul + p').textContent = offerItem.offer.description;
+// заполнение вспомогательных данных для карточки предложения
 
-  // поиск родительского блока для доп услуг
-  var offerFeatures = filledOffer.querySelector('.popup__features');
-  offerFeatures.textContent = '';
-  // создание шаблона
+var offerTypes = {
+  bungalo: 'Бунгало',
+  house: 'Дом',
+  flat: 'Квартира'
+};
+
+var getOfferFeatures = function (parentElem, offerItem) {
+  parentElem.textContent = '';
   var templateFeature = document.createElement('li');
   templateFeature.classList.add('feature');
-  // создание фрагмента для вставки
   var offerFeaturesFragment = document.createDocumentFragment();
-  // генерируем список услуг
   for (i = 0; i < offerItem.offer.features.length; i++) {
     var featureItem = templateFeature.cloneNode();
     featureItem.classList.add('feature--' + offerItem.offer.features[i]);
     offerFeaturesFragment.appendChild(featureItem);
   }
-  // добавляем созданный фрагмент в родительский блок
-  offerFeatures.appendChild(offerFeaturesFragment);
+  return offerFeaturesFragment;
+};
 
-  // добавление фотографий по шаблону
-  var offerPicture = filledOffer.querySelector('.popup__pictures');
-  offerPicture.textContent = '';
-  // добавление стилей для контейнера фото, дабы выглядело ок
-  offerPicture.style = 'display: flex; flex-wrap: wrap; justify-content: space-between;';
+var getOfferPictures = function (parentElem, offerItem) {
+  parentElem.textContent = '';
+  parentElem.style = 'display: flex; flex-wrap: wrap; justify-content: space-between;';
   var templatePicture = document.createElement('li');
   var offerPicturesFragment = document.createDocumentFragment();
   for (i = 0; i < offerItem.offer.photos.length; i++) {
@@ -152,7 +138,24 @@ var renderOfferCard = function (offerItem) {
     pictureItem.appendChild(imgInPicture);
     offerPicturesFragment.appendChild(pictureItem);
   }
-  offerPicture.appendChild(offerPicturesFragment);
+  return offerPicturesFragment;
+};
+
+// заполнение данными карточки товара
+var renderOfferCard = function (offerItem) {
+  var filledOffer = templateOfferCard.cloneNode(true);
+  filledOffer.querySelector('h3').textContent = offerItem.offer.title;
+  filledOffer.querySelector('p small').textContent = offerItem.offer.address;
+  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + '&#x20bd;/ночь';
+  filledOffer.querySelector('h4').textContent = offerTypes[offerItem.offer.type];
+  filledOffer.querySelector('h4 + p').textContent = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
+  filledOffer.querySelector('p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
+  filledOffer.querySelector('.popup__avatar').src = offerItem.author.avatar;
+  filledOffer.querySelector('ul + p').textContent = offerItem.offer.description;
+  var offerFeaturesContainer = filledOffer.querySelector('.popup__features');
+  offerFeaturesContainer.appendChild(getOfferFeatures(offerFeaturesContainer, offerItem));
+  var offerPictureContainer = filledOffer.querySelector('.popup__pictures');
+  offerPictureContainer.appendChild(getOfferPictures(offerPictureContainer, offerItem));
   return filledOffer;
 };
 

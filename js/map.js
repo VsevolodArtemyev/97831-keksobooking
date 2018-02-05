@@ -20,6 +20,11 @@ var MAX_PRICE = 1000000;
 
 document.querySelector('.map').classList.remove('.map--faded');
 
+// сортировка массива случайным образом
+var compareValues = function () {
+  return Math.random() - 0.5;
+};
+
 var renderOffer = function () {
   var offers = [];
 
@@ -28,16 +33,14 @@ var renderOffer = function () {
   for (var i = 1; i <= QUANTITY_OFFER; i++) {
     imgUrls.push('img/avatars/user0' + i + '.png');
   }
+
   // копируем массив фотографий
   var offersPhotos = OFFER_PHOTOS.slice();
+
   // создание объекта предложения
   for (i = 0; i < QUANTITY_OFFER; i++) {
     var offerImgNumber = Math.floor(Math.random() * imgUrls.length);
     var offerTitleNumber = Math.floor(Math.random() * OFFER_TITLES.length);
-    // сортировка массива случайным образом
-    var compareValues = function () {
-      return Math.random() - 0.5;
-    };
     offersPhotos.sort(compareValues);
     // формируем массив случайной длины
     var offersFeatures = OFFER_FEATURES.slice();
@@ -45,28 +48,30 @@ var renderOffer = function () {
     // определение координат случайным образом в заданном диапазоне
     var offerLocationX = Math.floor(Math.random() * (MAX_COORDINATE_X - MIN_COORDINATE_X) + MIN_COORDINATE_X);
     var offerLocationY = Math.floor(Math.random() * (MAX_COORDINATE_Y - MIN_COORDINATE_Y) + MIN_COORDINATE_Y);
+
     offers.push({
       'author': {
-        'avatar': imgUrls[offerImgNumber]
+        avatar: imgUrls[offerImgNumber]
       },
       'offer': {
-        'title': OFFER_TITLES[offerTitleNumber],
-        'address': offerLocationX + ', ' + offerLocationY,
-        'price': Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE) + MIN_PRICE),
-        'type': OFFER_TYPES[Math.floor(Math.random() * OFFER_TYPES.length)],
-        'rooms': Math.floor(Math.random() * (5 - 1) + 1),
-        'guests': Math.floor(Math.random() * (10 - 1) + 1),
-        'checkin': OFFER_TIMES[Math.floor(Math.random() * OFFER_TIMES.length)],
-        'checkout': OFFER_TIMES[Math.floor(Math.random() * OFFER_TIMES.length)],
-        'features': offersFeatures,
-        'description': '',
-        'photos': offersPhotos
+        title: OFFER_TITLES[offerTitleNumber],
+        address: offerLocationX + ', ' + offerLocationY,
+        price: Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE) + MIN_PRICE),
+        type: OFFER_TYPES[Math.floor(Math.random() * OFFER_TYPES.length)],
+        rooms: Math.floor(Math.random() * (5 - 1) + 1),
+        guests: Math.floor(Math.random() * (10 - 1) + 1),
+        checkin: OFFER_TIMES[Math.floor(Math.random() * OFFER_TIMES.length)],
+        checkout: OFFER_TIMES[Math.floor(Math.random() * OFFER_TIMES.length)],
+        features: offersFeatures,
+        description: '',
+        photos: offersPhotos
       },
       'location': {
-        'x': offerLocationX,
-        'y': offerLocationY
+        x: offerLocationX,
+        y: offerLocationY
       }
     });
+
     // удаление из массивов картинок и названий использованных элементов
     imgUrls.splice(offerImgNumber, 1);
     OFFER_TITLES.splice(offerTitleNumber, 1);
@@ -81,10 +86,12 @@ var offers = renderOffer();
 var getTemplateMarker = function () {
   var templateButton = document.createElement('button');
   templateButton.className = 'map__pin';
+
   var templateImgInButton = document.createElement('img');
   templateImgInButton.width = PIN_IMG_WIDTH;
   templateImgInButton.height = PIN_IMG_HEIGHT;
   templateImgInButton.draggable = false;
+
   templateButton.appendChild(templateImgInButton);
   return templateButton;
 };
@@ -112,24 +119,24 @@ var offerTypes = {
   flat: 'Квартира'
 };
 
-var getOfferFeatures = function (parentElem, offerItem) {
-  parentElem.textContent = '';
+var getOfferFeatures = function (offerItem) {
   var templateFeature = document.createElement('li');
   templateFeature.classList.add('feature');
   var offerFeaturesFragment = document.createDocumentFragment();
+
   for (i = 0; i < offerItem.offer.features.length; i++) {
     var featureItem = templateFeature.cloneNode();
     featureItem.classList.add('feature--' + offerItem.offer.features[i]);
     offerFeaturesFragment.appendChild(featureItem);
   }
+
   return offerFeaturesFragment;
 };
 
-var getOfferPictures = function (parentElem, offerItem) {
-  parentElem.textContent = '';
-  parentElem.style = 'display: flex; flex-wrap: wrap; justify-content: space-between;';
+var getOfferPictures = function (offerItem) {
   var templatePicture = document.createElement('li');
   var offerPicturesFragment = document.createDocumentFragment();
+
   for (i = 0; i < offerItem.offer.photos.length; i++) {
     var pictureItem = templatePicture.cloneNode();
     var imgInPicture = document.createElement('img');
@@ -138,12 +145,14 @@ var getOfferPictures = function (parentElem, offerItem) {
     pictureItem.appendChild(imgInPicture);
     offerPicturesFragment.appendChild(pictureItem);
   }
+
   return offerPicturesFragment;
 };
 
 // заполнение данными карточки товара
 var renderOfferCard = function (offerItem) {
   var filledOffer = templateOfferCard.cloneNode(true);
+
   filledOffer.querySelector('h3').textContent = offerItem.offer.title;
   filledOffer.querySelector('p small').textContent = offerItem.offer.address;
   filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + '&#x20bd;/ночь';
@@ -152,10 +161,16 @@ var renderOfferCard = function (offerItem) {
   filledOffer.querySelector('p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
   filledOffer.querySelector('.popup__avatar').src = offerItem.author.avatar;
   filledOffer.querySelector('ul + p').textContent = offerItem.offer.description;
+
   var offerFeaturesContainer = filledOffer.querySelector('.popup__features');
-  offerFeaturesContainer.appendChild(getOfferFeatures(offerFeaturesContainer, offerItem));
+  offerFeaturesContainer.textContent = '';
+  offerFeaturesContainer.appendChild(getOfferFeatures(offerItem));
+
   var offerPictureContainer = filledOffer.querySelector('.popup__pictures');
-  offerPictureContainer.appendChild(getOfferPictures(offerPictureContainer, offerItem));
+  offerPictureContainer.textContent = '';
+  offerPictureContainer.style = 'display: flex; flex-wrap: wrap; justify-content: space-between;';
+  offerPictureContainer.appendChild(getOfferPictures(offerItem));
+
   return filledOffer;
 };
 

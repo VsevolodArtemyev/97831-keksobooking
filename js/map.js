@@ -17,8 +17,56 @@ var MIN_COORDINATE_Y = 150;
 var MAX_COORDINATE_Y = 500;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
+var ENTER_KEYCODE = 13;
 
-document.querySelector('.map').classList.remove('.map--faded');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
+var noticeForm = document.querySelector('.notice__form');
+var fieldsForm = document.querySelectorAll('fieldset');
+
+var mainPin = document.querySelector('.map__pin--main');
+
+var pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
+var pinLocationY = mainPin.offsetTop + mainPin.offsetHeight / 2;
+
+var fieldAddress = document.querySelector('#address');
+fieldAddress.value = pinLocationX + ', ' + pinLocationY;
+
+for (var i = 0; i < fieldsForm.length; i++) {
+  fieldsForm[i].disabled = true;
+}
+
+var getActivePage = function () {
+  map.classList.remove('map--faded');
+  noticeForm.classList.remove('notice__form--disabled');
+  for (i = 0; i < fieldsForm.length; i++) {
+    fieldsForm[i].disabled = false;
+  }
+};
+
+var getLocationPin = function () {
+  pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
+  pinLocationY = mainPin.offsetTop + PIN_HEIGHT;
+  fieldAddress.value = pinLocationX + ', ' + pinLocationY;
+};
+
+mainPin.addEventListener('mouseup', function () {
+  getActivePage();
+  getLocationPin();
+  renderPins();
+  mapPins.addEventListener('click', function (evt) {
+    var idOffer = evt.path[1].id.substr(-1);
+    if (idOffer) {
+      showCardPopup(idOffer);
+    }
+  });
+  mapPins.addEventListener('keydown', function (evt) {
+    var idOffer = evt.target.id.substr(-1);
+    if (idOffer && evt.keyCode === ENTER_KEYCODE) {
+      showCardPopup(idOffer);
+    }
+  });
+});
 
 // сортировка массива случайным образом
 var compareValues = function () {
@@ -30,7 +78,7 @@ var renderOffer = function () {
 
   // создание массива аватаров
   var imgUrls = [];
-  for (var i = 1; i <= QUANTITY_OFFER; i++) {
+  for (i = 1; i <= QUANTITY_OFFER; i++) {
     imgUrls.push('img/avatars/user0' + i + '.png');
   }
 
@@ -50,10 +98,11 @@ var renderOffer = function () {
     var offerLocationY = Math.floor(Math.random() * (MAX_COORDINATE_Y - MIN_COORDINATE_Y) + MIN_COORDINATE_Y);
 
     offers.push({
-      'author': {
+      id: i,
+      author: {
         avatar: imgUrls[offerImgNumber]
       },
-      'offer': {
+      offer: {
         title: OFFER_TITLES[offerTitleNumber],
         address: offerLocationX + ', ' + offerLocationY,
         price: Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE) + MIN_PRICE),
@@ -66,7 +115,7 @@ var renderOffer = function () {
         description: '',
         photos: offersPhotos
       },
-      'location': {
+      location: {
         x: offerLocationX,
         y: offerLocationY
       }
@@ -101,15 +150,18 @@ var renderOfferMarker = function (offer) {
   var marker = getTemplateMarker();
   marker.style = 'left: ' + (offer.location.x - PIN_WIDTH / 2) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
   marker.firstChild.src = offer.author.avatar;
+  marker.id = 'pinOffer' + offer.id;
   return marker;
 };
 
 // формирование фрагмента со всеми метками
-var offersFragment = document.createDocumentFragment();
-for (var i = 0; i < QUANTITY_OFFER; i++) {
-  offersFragment.appendChild(renderOfferMarker(offers[i]));
-}
-document.querySelector('.map__pins').appendChild(offersFragment);
+var renderPins = function () {
+  var offersFragment = document.createDocumentFragment();
+  for (i = 0; i < QUANTITY_OFFER; i++) {
+    offersFragment.appendChild(renderOfferMarker(offers[i]));
+  }
+  mapPins.appendChild(offersFragment);
+};
 
 // заполнение вспомогательных данных для карточки предложения
 
@@ -174,8 +226,11 @@ var renderOfferCard = function (offerItem) {
   return filledOffer;
 };
 
-// добавление карточки предложения
 var templateOfferCard = document.querySelector('template').content;
-var offerCardsFragment = document.createDocumentFragment();
-offerCardsFragment.appendChild(renderOfferCard(offers[0]));
-document.querySelector('.map').insertBefore(offerCardsFragment, document.querySelector('.map__filters-container'));
+
+// добавление карточки предложения
+var showCardPopup = function (numberOfOffer) {
+  var offerCardsFragment = document.createDocumentFragment();
+  offerCardsFragment.appendChild(renderOfferCard(offers[numberOfOffer]));
+  document.querySelector('.map').insertBefore(offerCardsFragment, document.querySelector('.map__filters-container'));
+};

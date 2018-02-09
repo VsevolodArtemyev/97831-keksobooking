@@ -54,7 +54,7 @@ var getActivePage = function () {
   }
 };
 
-var getLocationPin = function () {
+var getPinLocation = function () {
   pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
   pinLocationY = mainPin.offsetTop + PIN_HEIGHT;
   fieldAddress.value = pinLocationX + ', ' + pinLocationY;
@@ -62,20 +62,21 @@ var getLocationPin = function () {
 
 mainPin.addEventListener('mouseup', function () {
   getActivePage();
-  getLocationPin();
+  getPinLocation();
   renderPins();
-  mapPins.addEventListener('click', function (evt) {
-    var idOffer = evt.path[1].id.substr(-1);
-    if (idOffer) {
-      showCardPopup(idOffer);
-    }
-  });
-  mapPins.addEventListener('keydown', function (evt) {
-    var idOffer = evt.target.id.substr(-1);
-    if (idOffer && evt.keyCode === ENTER_KEYCODE) {
-      showCardPopup(idOffer);
-    }
-  });
+});
+
+mapPins.addEventListener('click', function (evt) {
+  var offerId = evt.path[1].id.substr(-1);
+  if (offerId) {
+    showCardPopup(offerId);
+  }
+});
+mapPins.addEventListener('keydown', function (evt) {
+  var offerId = evt.target.id.substr(-1);
+  if (offerId && evt.keyCode === ENTER_KEYCODE) {
+    showCardPopup(offerId);
+  }
 });
 
 // сортировка массива случайным образом
@@ -217,10 +218,10 @@ var renderOfferCard = function (offerItem) {
 
   filledOffer.querySelector('h3').textContent = offerItem.offer.title;
   filledOffer.querySelector('p small').textContent = offerItem.offer.address;
-  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + '&#x20bd;/ночь';
+  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + ' \u20BD/ночь';
   filledOffer.querySelector('h4').textContent = offerTypes[offerItem.offer.type];
   filledOffer.querySelector('h4 + p').textContent = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
-  filledOffer.querySelector('p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
+  filledOffer.querySelector('h4 + p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
   filledOffer.querySelector('.popup__avatar').src = offerItem.author.avatar;
   filledOffer.querySelector('ul + p').textContent = offerItem.offer.description;
 
@@ -265,40 +266,38 @@ fieldTimeOut.addEventListener('change', function (evt) {
 });
 
 for (i = 0; i < optionsCapacitySelect.length; i++) {
-  optionsCapacitySelect[i].disabled = false;
-  if (optionsCapacitySelect[i].value > roomsSelect.value) {
-    optionsCapacitySelect[i].disabled = true;
-  }
   if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
-    optionsCapacitySelect[i].disabled = true;
+    optionsCapacitySelect[i].value = NOT_GUEST_ROOMS_VALUE;
   }
-}
-if (roomsSelect.value < capacitySelect.value) {
-  capacitySelect.setCustomValidity('Введите корректное значение');
 }
 
-roomsSelect.addEventListener('change', function (evt) {
-  var selectedRoomValue = evt.target.value;
+
+var selectedRoomValue = roomsSelect.value;
+
+var disableCapacityOptions = function (selectedRoom) {
   for (i = 0; i < optionsCapacitySelect.length; i++) {
-    optionsCapacitySelect[i].disabled = false;
-    if (optionsCapacitySelect[i].value > selectedRoomValue) {
+    if (selectedRoom === NOT_GUEST_ROOMS_VALUE) {
+      capacitySelect.value = selectedRoom;
       optionsCapacitySelect[i].disabled = true;
-    }
-    if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
-      optionsCapacitySelect[i].disabled = true;
-    }
-  }
-  if (+selectedRoomValue === NOT_GUEST_ROOMS_VALUE) {
-    capacitySelect.value = NOT_GUEST_CAPACITY_VALUE;
-    for (i = 0; i < optionsCapacitySelect.length; i++) {
-      if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
+      if (+optionsCapacitySelect[i].value === selectedRoom) {
         optionsCapacitySelect[i].disabled = false;
-      } else {
+      }
+    } else {
+      optionsCapacitySelect[i].disabled = false;
+      if (+optionsCapacitySelect[i].value > selectedRoom) {
         optionsCapacitySelect[i].disabled = true;
       }
+      if (capacitySelect.value > selectedRoom) {
+        capacitySelect.value = selectedRoom;
+      }
     }
-  } else if (capacitySelect.value > selectedRoomValue || (+capacitySelect.value === NOT_GUEST_CAPACITY_VALUE && +selectedRoomValue !== NOT_GUEST_ROOMS_VALUE)) {
-    capacitySelect.value = selectedRoomValue;
   }
+};
+
+disableCapacityOptions(+selectedRoomValue);
+
+roomsSelect.addEventListener('change', function (evt) {
+  selectedRoomValue = evt.target.value;
+  disableCapacityOptions(+selectedRoomValue);
 });
 

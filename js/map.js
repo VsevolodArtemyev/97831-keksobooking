@@ -18,6 +18,8 @@ var MAX_COORDINATE_Y = 500;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var ENTER_KEYCODE = 13;
+var NOT_GUEST_ROOMS_VALUE = 100;
+var NOT_GUEST_CAPACITY_VALUE = 0;
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -30,6 +32,14 @@ var pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
 var pinLocationY = mainPin.offsetTop + mainPin.offsetHeight / 2;
 
 var fieldAddress = document.querySelector('#address');
+var fieldPrice = document.querySelector('#price');
+var typeSelect = document.querySelector('#type');
+var fieldTimeIn = document.querySelector('#timein');
+var fieldTimeOut = document.querySelector('#timeout');
+var roomsSelect = document.querySelector('#room_number');
+var capacitySelect = document.querySelector('#capacity');
+var optionsCapacitySelect = document.querySelectorAll('#capacity option');
+
 fieldAddress.value = pinLocationX + ', ' + pinLocationY;
 
 for (var i = 0; i < fieldsForm.length; i++) {
@@ -208,10 +218,10 @@ var renderOfferCard = function (offerItem) {
 
   filledOffer.querySelector('h3').textContent = offerItem.offer.title;
   filledOffer.querySelector('p small').textContent = offerItem.offer.address;
-  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + '&#x20bd;/ночь';
+  filledOffer.querySelector('.popup__price').textContent = offerItem.offer.price + ' \u20BD/ночь';
   filledOffer.querySelector('h4').textContent = offerTypes[offerItem.offer.type];
   filledOffer.querySelector('h4 + p').textContent = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
-  filledOffer.querySelector('p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
+  filledOffer.querySelector('h4 + p + p').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
   filledOffer.querySelector('.popup__avatar').src = offerItem.author.avatar;
   filledOffer.querySelector('ul + p').textContent = offerItem.offer.description;
 
@@ -235,3 +245,59 @@ var showCardPopup = function (numberOfOffer) {
   offerCardsFragment.appendChild(renderOfferCard(offers[numberOfOffer]));
   document.querySelector('.map').insertBefore(offerCardsFragment, document.querySelector('.map__filters-container'));
 };
+
+var offerMinPrice = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
+
+typeSelect.addEventListener('change', function (evt) {
+  fieldPrice.min = offerMinPrice[evt.target.value];
+});
+
+fieldTimeIn.addEventListener('change', function (evt) {
+  fieldTimeOut.value = evt.target.value;
+});
+
+fieldTimeOut.addEventListener('change', function (evt) {
+  fieldTimeIn.value = evt.target.value;
+});
+
+for (i = 0; i < optionsCapacitySelect.length; i++) {
+  if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
+    optionsCapacitySelect[i].value = NOT_GUEST_ROOMS_VALUE;
+  }
+}
+
+
+var selectedRoomValue = roomsSelect.value;
+
+var disableCapacityOptions = function (selectedRoom) {
+  for (i = 0; i < optionsCapacitySelect.length; i++) {
+    if (selectedRoom === NOT_GUEST_ROOMS_VALUE) {
+      capacitySelect.value = selectedRoom;
+      optionsCapacitySelect[i].disabled = true;
+      if (+optionsCapacitySelect[i].value === selectedRoom) {
+        optionsCapacitySelect[i].disabled = false;
+      }
+    } else {
+      optionsCapacitySelect[i].disabled = false;
+      if (+optionsCapacitySelect[i].value > selectedRoom) {
+        optionsCapacitySelect[i].disabled = true;
+      }
+      if (capacitySelect.value > selectedRoom) {
+        capacitySelect.value = selectedRoom;
+      }
+    }
+  }
+};
+
+disableCapacityOptions(+selectedRoomValue);
+
+roomsSelect.addEventListener('change', function (evt) {
+  selectedRoomValue = evt.target.value;
+  disableCapacityOptions(+selectedRoomValue);
+});
+

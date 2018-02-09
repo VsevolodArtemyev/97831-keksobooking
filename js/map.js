@@ -44,7 +44,7 @@ var getActivePage = function () {
   }
 };
 
-var getLocationPin = function () {
+var getPinLocation = function () {
   pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
   pinLocationY = mainPin.offsetTop + PIN_HEIGHT;
   fieldAddress.value = pinLocationX + ', ' + pinLocationY;
@@ -52,20 +52,21 @@ var getLocationPin = function () {
 
 mainPin.addEventListener('mouseup', function () {
   getActivePage();
-  getLocationPin();
+  getPinLocation();
   renderPins();
-  mapPins.addEventListener('click', function (evt) {
-    var idOffer = evt.path[1].id.substr(-1);
-    if (idOffer) {
-      showCardPopup(idOffer);
-    }
-  });
-  mapPins.addEventListener('keydown', function (evt) {
-    var idOffer = evt.target.id.substr(-1);
-    if (idOffer && evt.keyCode === ENTER_KEYCODE) {
-      showCardPopup(idOffer);
-    }
-  });
+});
+
+mapPins.addEventListener('click', function (evt) {
+  var offerId = evt.path[1].id.substr(-1);
+  if (offerId) {
+    showCardPopup(offerId);
+  }
+});
+mapPins.addEventListener('keydown', function (evt) {
+  var offerId = evt.target.id.substr(-1);
+  if (offerId && evt.keyCode === ENTER_KEYCODE) {
+    showCardPopup(offerId);
+  }
 });
 
 // сортировка массива случайным образом

@@ -33,29 +33,25 @@
     fieldTimeIn.value = evt.target.value;
   });
 
-  for (var i = 0; i < optionsCapacitySelect.length; i++) {
-    if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
-      optionsCapacitySelect[i].value = NOT_GUEST_ROOMS_VALUE;
-    }
-  }
-
-
   var selectedRoomValue = roomsSelect.value;
 
   var disableCapacityOptions = function (selectedRoom) {
-    for (i = 0; i < optionsCapacitySelect.length; i++) {
+    for (var i = 0; i < optionsCapacitySelect.length; i++) {
       if (selectedRoom === NOT_GUEST_ROOMS_VALUE) {
-        capacitySelect.value = selectedRoom;
+        capacitySelect.value = NOT_GUEST_CAPACITY_VALUE;
         optionsCapacitySelect[i].disabled = true;
-        if (+optionsCapacitySelect[i].value === selectedRoom) {
+        if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
           optionsCapacitySelect[i].disabled = false;
         }
       } else {
         optionsCapacitySelect[i].disabled = false;
+        if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) { 
+          optionsCapacitySelect[i].disabled = true;
+        }
         if (+optionsCapacitySelect[i].value > selectedRoom) {
           optionsCapacitySelect[i].disabled = true;
         }
-        if (capacitySelect.value > selectedRoom) {
+        if (capacitySelect.value > selectedRoom || +capacitySelect.value === NOT_GUEST_CAPACITY_VALUE) {
           capacitySelect.value = selectedRoom;
         }
       }

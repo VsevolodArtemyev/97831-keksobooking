@@ -7,7 +7,7 @@
   var PIN_IMG_HEIGHT = 40;
   var PIN_HEIGHT = 70;
 
-  window.mapPins = document.querySelector('.map__pins');
+  var mapPins = document.querySelector('.map__pins');
 
   var map = document.querySelector('.map');
   var noticeForm = document.querySelector('.notice__form');
@@ -69,7 +69,7 @@
     for (i = 0; i < window.QUANTITY_OFFER; i++) {
       offersFragment.appendChild(renderOfferMarker(window.offers[i]));
     }
-    window.mapPins.appendChild(offersFragment);
+    mapPins.appendChild(offersFragment);
   };
 
   mainPin.addEventListener('mouseup', function () {

@@ -5,13 +5,15 @@
   var ENTER_KEYCODE = 13;
   var ESC_KEYCODE = 27;
 
-  window.mapPins.addEventListener('click', function (evt) {
+  var mapPins = document.querySelector('.map__pins');
+
+  mapPins.addEventListener('click', function (evt) {
     var offerId = evt.path[1].id.substr(-1);
     if (offerId) {
       showCardPopup(offerId);
     }
   });
-  window.mapPins.addEventListener('keydown', function (evt) {
+  mapPins.addEventListener('keydown', function (evt) {
     var offerId = evt.target.id.substr(-1);
     if (offerId && evt.keyCode === ENTER_KEYCODE) {
       showCardPopup(offerId);

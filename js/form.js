@@ -45,7 +45,7 @@
         }
       } else {
         optionsCapacitySelect[i].disabled = false;
-        if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) { 
+        if (+optionsCapacitySelect[i].value === NOT_GUEST_CAPACITY_VALUE) {
           optionsCapacitySelect[i].disabled = true;
         }
         if (+optionsCapacitySelect[i].value > selectedRoom) {

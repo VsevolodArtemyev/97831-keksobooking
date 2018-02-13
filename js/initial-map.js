@@ -16,6 +16,8 @@
 
   var mainPin = document.querySelector('.map__pin--main');
 
+  mainPin.style.transform = 'translate(0,0)';
+
   var pinLocationX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
   var pinLocationY = mainPin.offsetTop + mainPin.offsetHeight / 2;
 
@@ -88,16 +90,26 @@
         y: startCoords.y - moveEvt.pageY
       };
 
-      startCoords = {
-        x: moveEvt.pageX,
-        y: moveEvt.pageY
-      };
-      if (moveEvt.pageY > window.pinCoordinate.MIN_COORDINATE_Y && moveEvt.pageY < window.pinCoordinate.MAX_COORDINATE_Y) {
-        mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
-      }
-      if (moveEvt.pageX > mapPinsOverlay.getBoundingClientRect().x &&
-          moveEvt.clientX < (mapPinsOverlay.getBoundingClientRect().x + mapPinsOverlay.offsetWidth)) {
-        mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+      var pinX = mainPin.offsetLeft + mainPin.offsetWidth / 2;
+      var pinY = mainPin.offsetTop + PIN_HEIGHT;
+
+      var nextPinCoordinateX = pinX - shift.x;
+      var nextPinCoordinateY = pinY - shift.y;
+
+      var isAvailableY = nextPinCoordinateY >= window.pinCoordinate.MIN_COORDINATE_Y && nextPinCoordinateY <= window.pinCoordinate.MAX_COORDINATE_Y;
+      var isAvailableX = nextPinCoordinateX >= mainPin.offsetWidth / 2 && nextPinCoordinateX <= mapPinsOverlay.offsetWidth - mainPin.offsetWidth / 2;
+
+      if (isAvailableY || isAvailableX) {
+        startCoords = {
+          x: moveEvt.pageX,
+          y: moveEvt.pageY
+        };
+        if (isAvailableY) {
+          mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+        }
+        if (isAvailableX) {
+          mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+        }
       }
     };
     var onMouseUp = function (upEvt) {

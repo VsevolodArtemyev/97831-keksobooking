@@ -8,10 +8,12 @@
   var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var OFFER_TYPES = ['flat', 'house', 'bungalo'];
   var OFFER_TIMES = ['12:00', '13:00', '14:00'];
-  var MIN_COORDINATE_X = 300;
-  var MAX_COORDINATE_X = 900;
-  var MIN_COORDINATE_Y = 150;
-  var MAX_COORDINATE_Y = 500;
+  window.pinCoordinate = {
+    MIN_COORDINATE_X: 300,
+    MAX_COORDINATE_X: 900,
+    MIN_COORDINATE_Y: 150,
+    MAX_COORDINATE_Y: 500
+  };
   var MIN_PRICE = 1000;
   var MAX_PRICE = 1000000;
 
@@ -41,8 +43,8 @@
       var offersFeatures = OFFER_FEATURES.slice();
       offersFeatures.length = Math.floor(Math.random() * (offersFeatures.length - 1) + 1);
       // определение координат случайным образом в заданном диапазоне
-      var offerLocationX = Math.floor(Math.random() * (MAX_COORDINATE_X - MIN_COORDINATE_X) + MIN_COORDINATE_X);
-      var offerLocationY = Math.floor(Math.random() * (MAX_COORDINATE_Y - MIN_COORDINATE_Y) + MIN_COORDINATE_Y);
+      var offerLocationX = Math.floor(Math.random() * (window.pinCoordinate.MAX_COORDINATE_X - window.pinCoordinate.MIN_COORDINATE_X) + window.pinCoordinate.MIN_COORDINATE_X);
+      var offerLocationY = Math.floor(Math.random() * (window.pinCoordinate.MAX_COORDINATE_Y - window.pinCoordinate.MIN_COORDINATE_Y) + window.pinCoordinate.MIN_COORDINATE_Y);
 
       offers.push({
         id: i,

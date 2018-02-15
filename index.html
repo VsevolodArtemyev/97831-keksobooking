@@ -12,6 +12,13 @@
   <h1 class="visuallyhidden">Keksobooking. Кексы по соседству</h1>
 </header>
 
+<div class='error-message hidden'>
+  <p>Что-то пошло не так...</p>
+  <p class='error-message__message'></p>
+  <p>Попробуйте позже</p>
+  <div class='error-message__close'></div>
+</div>
+
 <main>
   <section class="map map--faded">
     <div class="map__pins">
@@ -245,6 +252,8 @@
   <button style="left: 200px; top: 400px;" class="map__pin"><img src="img/avatars/user07.png" width="40" height="40" draggable="false"></button>
 </template>
 <script src='js/data.js'></script>
+<script src='js/backend.js'></script>
+<script src='js/error-message.js'></script>
 <script src='js/initial-map.js'></script>
 <script src='js/card.js'></script>
 <script src='js/visible-card.js'></script>

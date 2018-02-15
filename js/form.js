@@ -4,6 +4,8 @@
   var NOT_GUEST_ROOMS_VALUE = 100;
   var NOT_GUEST_CAPACITY_VALUE = 0;
 
+  var form = document.querySelector('.notice__form');
+
   var fieldPrice = document.querySelector('#price');
   var typeSelect = document.querySelector('#type');
   var fieldTimeIn = document.querySelector('#timein');
@@ -63,6 +65,11 @@
   roomsSelect.addEventListener('change', function (evt) {
     selectedRoomValue = evt.target.value;
     disableCapacityOptions(+selectedRoomValue);
+  });
+
+  form.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(form), form.reset.bind(form), window.showErrorMessage);
+    evt.preventDefault();
   });
 
 })();

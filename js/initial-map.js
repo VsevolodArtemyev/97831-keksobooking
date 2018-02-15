@@ -58,19 +58,24 @@
   };
 
   // функция добавления параметров метки
-  var renderOfferMarker = function (offer) {
+  var renderOfferMarker = function (offer, id) {
     var marker = getTemplateMarker();
     marker.style = 'left: ' + (offer.location.x - PIN_WIDTH / 2) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
     marker.firstChild.src = offer.author.avatar;
-    marker.id = 'pinOffer' + offer.id;
+    marker.id = 'pinOffer' + id;
     return marker;
   };
 
+  var getSuccessResponse = function (offers) {
+    window.offers = offers;
+    renderPins(window.offers);
+  };
+
   // формирование фрагмента со всеми метками
-  var renderPins = function () {
+  var renderPins = function (offers) {
     var offersFragment = document.createDocumentFragment();
     for (i = 0; i < window.QUANTITY_OFFER; i++) {
-      offersFragment.appendChild(renderOfferMarker(window.offers[i]));
+      offersFragment.appendChild(renderOfferMarker(offers[i], i));
     }
     window.mapPins.appendChild(offersFragment);
   };
@@ -116,7 +121,7 @@
       upEvt.preventDefault();
       if (map.classList.contains('map--faded')) {
         getActivePage();
-        renderPins();
+        window.backend.load(getSuccessResponse, window.showErrorMessage);
       }
       getPinLocation();
       document.removeEventListener('mousemove', onMouseMove);

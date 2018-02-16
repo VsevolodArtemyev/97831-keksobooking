@@ -424,9 +424,6 @@ textarea:focus
 
     border-radius: 5px;
     background: #fff;
-
-    max-height: 540px;
-    overflow-y: auto;
 }
 
 .popup ul
@@ -905,5 +902,10 @@ textarea:focus
 .error-message__close::before
 {
     transform: rotate(45deg);
+}
+.popup__pictures
+{
+    max-height: 150px;
+    overflow-y: auto;
 }
 

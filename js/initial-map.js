@@ -6,6 +6,9 @@
   var PIN_IMG_WIDTH = 40;
   var PIN_IMG_HEIGHT = 40;
   var PIN_HEIGHT = 70;
+  var MIN_COORDINATE_Y = 150;
+  var MAX_COORDINATE_Y = 500;
+  var QUANTITY_OFFER = 8;
 
   window.mapPins = document.querySelector('.map__pins');
 
@@ -58,19 +61,24 @@
   };
 
   // функция добавления параметров метки
-  var renderOfferMarker = function (offer) {
+  var renderOfferMarker = function (offer, id) {
     var marker = getTemplateMarker();
     marker.style = 'left: ' + (offer.location.x - PIN_WIDTH / 2) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
     marker.firstChild.src = offer.author.avatar;
-    marker.id = 'pinOffer' + offer.id;
+    marker.id = 'pinOffer' + id;
     return marker;
   };
 
+  var getSuccessResponse = function (offers) {
+    window.offers = offers;
+    renderPins(window.offers);
+  };
+
   // формирование фрагмента со всеми метками
-  var renderPins = function () {
+  var renderPins = function (offers) {
     var offersFragment = document.createDocumentFragment();
-    for (i = 0; i < window.QUANTITY_OFFER; i++) {
-      offersFragment.appendChild(renderOfferMarker(window.offers[i]));
+    for (i = 0; i < QUANTITY_OFFER; i++) {
+      offersFragment.appendChild(renderOfferMarker(offers[i], i));
     }
     window.mapPins.appendChild(offersFragment);
   };
@@ -96,7 +104,7 @@
       var nextPinCoordinateX = pinX - shift.x;
       var nextPinCoordinateY = pinY - shift.y;
 
-      var isAvailableY = nextPinCoordinateY >= window.pinCoordinate.MIN_COORDINATE_Y && nextPinCoordinateY <= window.pinCoordinate.MAX_COORDINATE_Y;
+      var isAvailableY = nextPinCoordinateY >= MIN_COORDINATE_Y && nextPinCoordinateY <= MAX_COORDINATE_Y;
       var isAvailableX = nextPinCoordinateX >= mainPin.offsetWidth / 2 && nextPinCoordinateX <= mapPinsOverlay.offsetWidth - mainPin.offsetWidth / 2;
 
       if (isAvailableY || isAvailableX) {
@@ -116,7 +124,7 @@
       upEvt.preventDefault();
       if (map.classList.contains('map--faded')) {
         getActivePage();
-        renderPins();
+        window.backend.load(getSuccessResponse, window.showErrorMessage);
       }
       getPinLocation();
       document.removeEventListener('mousemove', onMouseMove);

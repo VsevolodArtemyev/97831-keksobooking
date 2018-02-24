@@ -8,50 +8,34 @@
   var housingFeatures = document.querySelector('#housing-features');
   var housingFeaturesInputs = housingFeatures.querySelectorAll('input');
 
-  var PriceValueToNumberMax = {
-    'low': 10000,
-    'middle': 50000,
-    'high': 100000000
+  var priceValueToNumberMax = {
+    low: 10000,
+    middle: 50000,
+    high: 100000000
   };
-  var PriceValueToNumberMin = {
-    'low': 0,
-    'middle': 10000,
-    'high': 50000
+  var priceValueToNumberMin = {
+    low: 0,
+    middle: 10000,
+    high: 50000
   };
 
   var offers = [];
   var filteredOffers = [];
 
   var onFilterByHousingType = function (pin) {
-    if (housingType.value === 'any') {
-      return true;
-    } else {
-      return housingType.value === pin.offer.type;
-    }
+    return housingType.value === 'any' ? true : housingType.value === pin.offer.type;
   };
 
   var onFilterByHousingPrice = function (pin) {
-    if (housingPrice.value === 'any') {
-      return true;
-    } else {
-      return (pin.offer.price < PriceValueToNumberMax[housingPrice.value]) && (pin.offer.price >= PriceValueToNumberMin[housingPrice.value]);
-    }
+    return housingPrice.value === 'any' ? true : (pin.offer.price < priceValueToNumberMax[housingPrice.value]) && (pin.offer.price >= priceValueToNumberMin[housingPrice.value]);
   };
 
   var onFilterByHousingRooms = function (pin) {
-    if (housingRooms.value === 'any') {
-      return true;
-    } else {
-      return +housingRooms.value === pin.offer.rooms;
-    }
+    return housingRooms.value === 'any' ? true : +housingRooms.value === pin.offer.rooms;
   };
 
   var onFilterByHousingQuests = function (pin) {
-    if (housingQuests.value === 'any') {
-      return true;
-    } else {
-      return +housingQuests.value === pin.offer.guests;
-    }
+    return housingQuests.value === 'any' ? true : +housingQuests.value === pin.offer.guests;
   };
 
   var onFilterByHousingFeatures = function (pin) {
@@ -75,7 +59,8 @@
 
   var onChangeSelect = function () {
     offers = window.offers.slice();
-    filteredOffers = offers.filter(onFilterByHousingType)
+    filteredOffers = offers
+        .filter(onFilterByHousingType)
         .filter(onFilterByHousingPrice)
         .filter(onFilterByHousingRooms)
         .filter(onFilterByHousingQuests)

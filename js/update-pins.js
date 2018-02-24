@@ -45,10 +45,7 @@
       }
     });
 
-    quantityCounter = QUANTITY_OFFER;
-    if (offers.length < QUANTITY_OFFER) {
-      quantityCounter = offers.length;
-    }
+    quantityCounter = offers.length < QUANTITY_OFFER ? offers.length : QUANTITY_OFFER;
 
     for (var i = 0; i < quantityCounter; i++) {
       offersFragment.appendChild(renderOfferMarker(offers[i]));

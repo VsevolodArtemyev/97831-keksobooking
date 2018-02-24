@@ -8,7 +8,8 @@
   var noticeForm = document.querySelector('.notice__form');
   var fieldsForm = document.querySelectorAll('fieldset');
   var fieldAddress = document.querySelector('#address');
-  var mapCard = document.querySelector('.map__card');
+  var roomsSelect = document.querySelector('#room_number');
+  var capacitySelect = document.querySelector('#capacity');
   var photoContainer = document.querySelector('.form__photo-container .upload');
   var avatar = document.querySelector('.notice__preview img');
   var defaultAvatarSrc = document.querySelector('.notice__preview img').src;
@@ -29,6 +30,7 @@
     },
     setPassive: function () {
       var uploadedPhotos = document.querySelectorAll('.uploaded-photo');
+      var mapCard = document.querySelector('.map__card');
 
       mainPin.style = '';
       mainPin.style.transform = 'translate(0,0)';
@@ -46,6 +48,10 @@
       }
 
       avatar.src = defaultAvatarSrc;
+
+      if (capacitySelect.value > roomsSelect.value) {
+        capacitySelect.value = roomsSelect.value;
+      }
 
       renderedPins = mapPins.querySelectorAll('.map__pin');
       [].forEach.call(renderedPins, function (pin) {

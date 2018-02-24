@@ -35,8 +35,6 @@
     fieldTimeIn.value = evt.target.value;
   });
 
-  var selectedRoomValue = +roomsSelect.value;
-
   var disableCapacityOptions = function (selectedRoom) {
     for (var i = 0; i < optionsCapacitySelect.length; i++) {
       if (selectedRoom === NOT_GUEST_ROOMS_VALUE) {
@@ -60,7 +58,7 @@
     }
   };
 
-  disableCapacityOptions(selectedRoomValue);
+  var selectedRoomValue = +roomsSelect.value;
 
   roomsSelect.addEventListener('change', function (evt) {
     selectedRoomValue = evt.target.value;
@@ -73,12 +71,7 @@
   };
 
   form.addEventListener('submit', function (evt) {
-    if (capacitySelect.value > selectedRoomValue || +capacitySelect.value === NOT_GUEST_CAPACITY_VALUE) {
-      capacitySelect.setCustomValidity('Необходимо выбрать другое значение');
-    } else {
-      capacitySelect.setCustomValidity('');
-      window.backend.save(new FormData(form), onSuccessSaveForm, window.showErrorMessage);
-    }
+    window.backend.save(new FormData(form), onSuccessSaveForm, window.showErrorMessage);
     evt.preventDefault();
   });
 

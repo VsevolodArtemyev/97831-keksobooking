@@ -58,11 +58,11 @@
     }
   };
 
-  var selectedRoomValue = +roomsSelect.value;
+  var selectedRoomValue = 0;
 
   roomsSelect.addEventListener('change', function (evt) {
     selectedRoomValue = evt.target.value;
-    disableCapacityOptions(selectedRoomValue);
+    disableCapacityOptions(+selectedRoomValue);
   });
 
   var onSuccessSaveForm = function () {

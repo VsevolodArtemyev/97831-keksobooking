@@ -8,8 +8,7 @@
 
   var templatePhoto = document.createElement('img');
   templatePhoto.classList.add('uploaded-photo');
-  templatePhoto.height = 70;
-  templatePhoto.style = 'display: inline-block; margin-right: 10px;';
+  templatePhoto.draggable = 'true';
 
   fileChooser.addEventListener('change', function () {
     var files = fileChooser.files;

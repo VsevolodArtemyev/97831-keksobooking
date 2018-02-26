@@ -735,7 +735,8 @@ textarea:focus
 
 .form__photo-container
 {
-    width: 140px;
+    /* width: 140px; */
+    width: 100%;
 }
 
 .form__element--submit
@@ -908,4 +909,15 @@ textarea:focus
     max-height: 150px;
     overflow-y: auto;
 }
-
+.form__photo-container .upload {
+    flex-wrap: wrap;
+}
+.form__photo-container .drop-zone
+{
+    width: 140px;
+}
+.uploaded-photo {
+    height: 70px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}

@@ -54,12 +54,12 @@
     for (var i = 0; i < OFFERS_COUNT; i++) {
       var location = {
         x: getRandom(300, 900),
-        y: getRandom(300, 900)
+        y: getRandom(150, 500)
       };
 
       data.push({
         author: {
-          avatar: 'img/avatars/user0' + i
+          avatar: 'img/avatars/user0' + (i + 1) + '.png'
         },
         offer: {
           title: TITLES[i],
@@ -84,8 +84,8 @@
   function createPinLayout(advert) {
     var button = document.createElement('button');
 
-    button.style.left = advert.location + PIN_WIDTH / 2;
-    button.style.top = advert.location + PIN_HEIGHT;
+    button.style.left = (advert.location.x + PIN_WIDTH / 2) + 'px';
+    button.style.top = (advert.location.y + PIN_HEIGHT) + 'px';
 
     button.className = 'map__pin';
     button.innerHTML = '<img src="' + advert.author.avatar + '" width="40" height="40" draggable="false">';
@@ -105,7 +105,7 @@
 
   function renderOfferCard(advert) {
     var offer = advert.offer;
-    var offerCardElement = offerCardTemplateElement.cloneNode();
+    var offerCardElement = offerCardTemplateElement.cloneNode(true);
 
     offerCardElement.querySelector('.popup__title').textContent = offer.title;
     offerCardElement.querySelector('.popup__address small').textContent = offer.address;

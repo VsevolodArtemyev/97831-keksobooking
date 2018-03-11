@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  // ============================= module3-task1 ======================================== //
+
   var OFFERS_COUNT = 8;
   var PIN_HEIGHT = 70;
   var PIN_WIDTH = 50;
@@ -58,6 +60,7 @@
       };
 
       data.push({
+        id: i,
         author: {
           avatar: 'img/avatars/user0' + (i + 1) + '.png'
         },
@@ -86,6 +89,7 @@
 
     button.style.left = (advert.location.x + PIN_WIDTH / 2) + 'px';
     button.style.top = (advert.location.y + PIN_HEIGHT) + 'px';
+    button.setAttribute('advert-id', advert.id);
 
     button.className = 'map__pin';
     button.innerHTML = '<img src="' + advert.author.avatar + '" width="40" height="40" draggable="false">';
@@ -93,11 +97,11 @@
     return button;
   }
 
-  function renderPins(offers) {
+  function renderPins(ads) {
     var pinsFragment = document.createDocumentFragment();
 
-    offers.forEach(function (offer) {
-      pinsFragment.appendChild((createPinLayout(offer)));
+    ads.forEach(function (advert) {
+      pinsFragment.appendChild((createPinLayout(advert)));
     });
 
     mapPinsElement.appendChild(pinsFragment);
@@ -108,6 +112,7 @@
     var offerCardElement = offerCardTemplateElement.cloneNode(true);
 
     offerCardElement.querySelector('.popup__title').textContent = offer.title;
+    offerCardElement.querySelector('.popup__avatar').src = advert.author.avatar;
     offerCardElement.querySelector('.popup__address small').textContent = offer.address;
     offerCardElement.querySelector('.popup__price').textContent = offer.price + '&#x20bd;/ночь';
     offerCardElement.querySelector('.popup__type').textContent = TYPES_TRANSLATIONS[offer.type];
@@ -123,15 +128,65 @@
 
     offerCardElement.querySelector('.popup__pictures').innerHTML = offer.photos
         .map(function (photoUrl) {
-          return '<li><img src="' + photoUrl + '"></li>';
+          return '<li><img src="' + photoUrl + '" style="width: 100%"></li>';
         })
         .join('');
 
     mapElement.insertBefore(offerCardElement, filtersContainerElement);
   }
 
-  mapElement.classList.remove('map--faded');
 
-  renderPins(adverts);
-  renderOfferCard(adverts[0]);
+  // ============================= module4-task1 ======================================== //
+
+
+  var mainPinElement = document.querySelector('.map__pin--main');
+  var noticeFormElement = document.querySelector('.notice__form');
+  var filterFormElement = document.querySelector('.map__filters');
+  var addressElement = noticeFormElement.querySelector('#address');
+
+
+  var initialMainPinX = mainPinElement.offsetLeft + PIN_WIDTH / 2;
+  var initialMainPinY = mainPinElement.offsetTop + PIN_HEIGHT / 2;
+  addressElement.value = initialMainPinX + ', ' + initialMainPinY;
+
+
+  function switchForm(type) {
+    var noticeFormChildren = [].slice.call(noticeFormElement.children);
+    var filterFormChildren = [].slice.call(filterFormElement.children);
+
+    noticeFormChildren
+        .concat(filterFormChildren)
+        .forEach(function (el) {
+          el.disabled = type !== 'active';
+        });
+  }
+
+  function onPinClick(evt) {
+    var target = evt.target.tagName === 'IMG' ?
+      evt.target.parentElement :
+      evt.target;
+
+    if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
+      var advertId = +target.getAttribute('advert-id');
+      var advert = adverts[advertId];
+
+      renderOfferCard(advert);
+    }
+  }
+
+  function onActivate() {
+    mapElement.classList.remove('map--faded');
+    noticeFormElement.classList.remove('notice__form--disabled');
+
+    switchForm('active');
+
+    var mainPinX = mainPinElement.offsetLeft + PIN_WIDTH / 2;
+    var mainPinY = mainPinElement.offsetTop + PIN_HEIGHT;
+    addressElement.value = mainPinX + ', ' + mainPinY;
+
+    renderPins(adverts);
+  }
+
+  mainPinElement.addEventListener('mouseup', onActivate);
+  mapElement.addEventListener('click', onPinClick);
 })();
